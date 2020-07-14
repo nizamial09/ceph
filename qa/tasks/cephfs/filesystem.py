@@ -509,7 +509,7 @@ class Filesystem(MDSCluster):
                 while count > max_mds:
                     targets = sorted(self.get_ranks(status=status), key=lambda r: r['rank'], reverse=True)
                     target = targets[0]
-                    log.info("deactivating rank %d" % target['rank'])
+                    log.debug("deactivating rank %d" % target['rank'])
                     self.deactivate(target['rank'])
                     status = self.wait_for_daemons(skip_max_mds_check=True)
                     count = len(list(self.get_ranks(status=status)))
@@ -567,7 +567,7 @@ class Filesystem(MDSCluster):
         else:
             data_pool_name = self.data_pool_name
 
-        log.info("Creating filesystem '{0}'".format(self.name))
+        log.debug("Creating filesystem '{0}'".format(self.name))
 
         self.mon_manager.raw_cluster_cmd('osd', 'pool', 'create',
                                          self.metadata_pool_name, self.pgs_per_fs_pool.__str__())
@@ -577,7 +577,7 @@ class Filesystem(MDSCluster):
                                              '--allow-dangerous-metadata-overlay')
         else:
             if self.ec_profile and 'disabled' not in self.ec_profile:
-                log.info("EC profile is %s", self.ec_profile)
+                log.debug("EC profile is %s", self.ec_profile)
                 cmd = ['osd', 'erasure-code-profile', 'set', data_pool_name]
                 cmd.extend(self.ec_profile)
                 self.mon_manager.raw_cluster_cmd(*cmd)
@@ -611,7 +611,7 @@ class Filesystem(MDSCluster):
 
         self.getinfo(refresh = True)
 
-        
+
     def check_pool_application(self, pool_name):
         osd_map = self.mon_manager.get_osd_dump_json()
         for pool in osd_map['pools']:
@@ -620,7 +620,7 @@ class Filesystem(MDSCluster):
                     if not "cephfs" in pool['application_metadata']:
                         raise RuntimeError("Pool {pool_name} does not name cephfs as application!".\
                                            format(pool_name=pool_name))
-        
+
 
     def __del__(self):
         if getattr(self._ctx, "filesystem", None) == self:
@@ -768,7 +768,7 @@ class Filesystem(MDSCluster):
             else:
                 raise
 
-        log.info("are_daemons_healthy: mds map: {0}".format(mds_map))
+        log.debug("are_daemons_healthy: mds map: {0}".format(mds_map))
 
         for mds_id, mds_status in mds_map['info'].items():
             if mds_status['state'] not in ["up:active", "up:standby", "up:standby-replay"]:
@@ -777,13 +777,13 @@ class Filesystem(MDSCluster):
             elif mds_status['state'] == 'up:active':
                 active_count += 1
 
-        log.info("are_daemons_healthy: {0}/{1}".format(
+        log.debug("are_daemons_healthy: {0}/{1}".format(
             active_count, mds_map['max_mds']
         ))
 
         if not skip_max_mds_check:
             if active_count > mds_map['max_mds']:
-                log.info("are_daemons_healthy: number of actives is greater than max_mds: {0}".format(mds_map))
+                log.debug("are_daemons_healthy: number of actives is greater than max_mds: {0}".format(mds_map))
                 return False
             elif active_count == mds_map['max_mds']:
                 # The MDSMap says these guys are active, but let's check they really are
@@ -807,7 +807,7 @@ class Filesystem(MDSCluster):
             else:
                 return False
         else:
-            log.info("are_daemons_healthy: skipping max_mds check")
+            log.debug("are_daemons_healthy: skipping max_mds check")
             return True
 
     def get_daemon_names(self, state=None, status=None):
@@ -918,7 +918,7 @@ class Filesystem(MDSCluster):
                 elapsed += 1
 
             if elapsed > timeout:
-                log.info("status = {0}".format(status))
+                log.debug("status = {0}".format(status))
                 raise RuntimeError("Timed out waiting for MDS daemons to become healthy")
 
             status = self.status()
@@ -939,7 +939,7 @@ class Filesystem(MDSCluster):
             return self.mds_ids[0]
 
     def recreate(self):
-        log.info("Creating new filesystem")
+        log.debug("Creating new filesystem")
         self.delete_all_filesystems()
         self.id = None
         self.create()
@@ -1000,7 +1000,7 @@ class Filesystem(MDSCluster):
         journal_header_dump = self.get_metadata_object('Journaler::Header', journal_header_object)
 
         version = journal_header_dump['journal_header']['stream_format']
-        log.info("Read journal version {0}".format(version))
+        log.debug("Read journal version {0}".format(version))
 
         return version
 
@@ -1065,11 +1065,11 @@ class Filesystem(MDSCluster):
                 try:
                     mds_info = status.get_rank(self.id, rank)
                     current_state = mds_info['state'] if mds_info else None
-                    log.info("Looked up MDS state for mds.{0}: {1}".format(rank, current_state))
+                    log.debug("Looked up MDS state for mds.{0}: {1}".format(rank, current_state))
                 except:
                     mdsmap = self.get_mds_map(status=status)
                     if rank in mdsmap['failed']:
-                        log.info("Waiting for rank {0} to come back.".format(rank))
+                        log.debug("Waiting for rank {0} to come back.".format(rank))
                         current_state = None
                     else:
                         raise
@@ -1077,7 +1077,7 @@ class Filesystem(MDSCluster):
                 # mds_info is None if no daemon with this ID exists in the map
                 mds_info = status.get_mds(mds_id)
                 current_state = mds_info['state'] if mds_info else None
-                log.info("Looked up MDS state for {0}: {1}".format(mds_id, current_state))
+                log.debug("Looked up MDS state for {0}: {1}".format(mds_id, current_state))
             else:
                 # In general, look for a single MDS
                 states = [m['state'] for m in status.get_ranks(self.id)]
@@ -1087,11 +1087,11 @@ class Filesystem(MDSCluster):
                     current_state = reject
                 else:
                     current_state = None
-                log.info("mapped states {0} to {1}".format(states, current_state))
+                log.debug("mapped states {0} to {1}".format(states, current_state))
 
             elapsed = time.time() - started_at
             if current_state == goal_state:
-                log.info("reached state '{0}' in {1}s".format(current_state, elapsed))
+                log.debug("reached state '{0}' in {1}s".format(current_state, elapsed))
                 return elapsed
             elif reject is not None and current_state == reject:
                 raise RuntimeError("MDS in reject state {0}".format(current_state))
@@ -1224,12 +1224,12 @@ class Filesystem(MDSCluster):
         missing = set(want_objects) - set(exist_objects)
 
         if missing:
-            log.info("Objects missing (ino {0}, size {1}): {2}".format(
+            log.debug("Objects missing (ino {0}, size {1}): {2}".format(
                 ino, size, missing
             ))
             return False
         else:
-            log.info("All objects for ino {0} size {1} found".format(ino, size))
+            log.debug("All objects for ino {0} size {1} found".format(ino, size))
             return True
 
     def data_objects_absent(self, ino, size):
@@ -1237,12 +1237,12 @@ class Filesystem(MDSCluster):
         present = set(want_objects) & set(exist_objects)
 
         if present:
-            log.info("Objects not absent (ino {0}, size {1}): {2}".format(
+            log.debug("Objects not absent (ino {0}, size {1}): {2}".format(
                 ino, size, present
             ))
             return False
         else:
-            log.info("All objects for ino {0} size {1} are absent".format(ino, size))
+            log.debug("All objects for ino {0} size {1} are absent".format(ino, size))
             return True
 
     def dirfrag_exists(self, ino, frag):
@@ -1373,7 +1373,7 @@ class Filesystem(MDSCluster):
         t1 = datetime.datetime.now()
         r = self.tool_remote.sh(script=base_args + args, stdout=StringIO()).strip()
         duration = datetime.datetime.now() - t1
-        log.info("Ran {0} in time {1}, result:\n{2}".format(
+        log.debug("Ran {0} in time {1}, result:\n{2}".format(
             base_args + args, duration, r
         ))
         return r
