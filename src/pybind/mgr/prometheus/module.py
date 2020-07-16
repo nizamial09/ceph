@@ -8,7 +8,7 @@ import re
 import socket
 import threading
 import time
-from mgr_module import MgrModule, MgrStandbyModule, CommandResult, PG_STATES
+from mgr_module import MgrModule, MgrStandbyModule, CommandResult, PG_STATES, Option
 from mgr_util import get_default_addr, profile_method
 from rbd import RBD
 try:
@@ -192,7 +192,7 @@ class MetricCollectionThread(threading.Thread):
                 duration = time.time() - start_time
 
                 self.mod.log.debug('collecting cache in thread done')
-                
+
                 sleep_time = self.mod.scrape_interval - duration
                 if sleep_time < 0:
                     self.mod.log.warning(
@@ -227,12 +227,26 @@ class Module(MgrModule):
     ]
 
     MODULE_OPTIONS = [
-        {'name': 'server_addr'},
-        {'name': 'server_port'},
-        {'name': 'scrape_interval'},
-        {'name': 'stale_cache_strategy'},
-        {'name': 'rbd_stats_pools'},
-        {'name': 'rbd_stats_pools_refresh_interval', 'type': 'int', 'default': 300},
+        Option(
+            'server_addr'
+        ),
+        Option(
+            'server_port'
+        ),
+        Option(
+            'scrape_interval'
+        ),
+        Option(
+            'stale_cache_strategy'
+        ),
+        Option(
+            'rbd_stats_pools'
+        ),
+        Option(
+            name='rbd_stats_pools_refresh_interval',
+            type='int',
+            default=300
+        )
     ]
 
     STALE_CACHE_FAIL = 'fail'

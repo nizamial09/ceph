@@ -1,10 +1,16 @@
 import ceph_module  # noqa
 
-try:
-    from typing import Set, Tuple, Iterator, Any, Dict, Optional, Callable, List
-except ImportError:
-    # just for type checking
-    pass
+from typing import Set, Tuple, Iterator, Any, Dict, Optional, Callable, List, Union, TYPE_CHECKING
+if TYPE_CHECKING:
+    import sys
+    if sys.version_info >= (3, 8):
+        from typing import Literal
+    else:
+        from typing_extensions import Literal
+
+    OptionTypeLabel = Literal[
+        'uint', 'int', 'str', 'float', 'bool', 'addr', 'addrvec', 'uuid', 'size', 'secs']
+
 import logging
 import errno
 import json
@@ -339,6 +345,17 @@ def CLIWriteCommand(prefix, args="", desc=""):
 def _get_localized_key(prefix, key):
     return '{}/{}'.format(prefix, key)
 
+# common/options.h
+OptionType = Union[
+    int,
+    str,
+    float,
+    bool,
+    ]
+
+
+# common/options.h: value_t
+ValueType = Union[bool, int, float, str]
 
 class Option(dict):
     """
@@ -351,15 +368,18 @@ class Option(dict):
     """
 
     def __init__(
-            self, name,
-            default=None,
-            type='str',
-            desc=None, longdesc=None,
-            min=None, max=None,
-            enum_allowed=None,
-            see_also=None,
-            tags=None,
-            runtime=False,
+            self,
+            name: str,
+            default: Optional[Any]=None,
+            type: 'OptionTypeLabel'='str',
+            desc: Optional[str]=None,
+            long_desc: Optional[str]=None,
+            min: Optional[ValueType]=None,
+            max: Optional[ValueType]=None,
+            enum_allowed: Optional[List[str]]=None,
+            tags: Optional[List[str]]=None,
+            see_also: Optional[List[str]]=None,
+            runtime: bool=False,
     ):
         super(Option, self).__init__(
             (k, v) for k, v in vars().items()
@@ -583,7 +603,7 @@ class MgrStandbyModule(ceph_module.BaseMgrStandbyModule, MgrModuleLoggingMixin):
     from their active peer), and to configuration settings (read only).
     """
 
-    MODULE_OPTIONS = []  # type: List[Dict[str, Any]]
+    MODULE_OPTIONS: List[Option] = []
     MODULE_OPTION_DEFAULTS = {}  # type: Dict[str, Any]
 
     def __init__(self, module_name, capsule):
@@ -685,7 +705,7 @@ class MgrStandbyModule(ceph_module.BaseMgrStandbyModule, MgrModuleLoggingMixin):
 
 class MgrModule(ceph_module.BaseMgrModule, MgrModuleLoggingMixin):
     COMMANDS = []  # type: List[Any]
-    MODULE_OPTIONS = []  # type: List[dict]
+    MODULE_OPTIONS: List[Option] = []
     MODULE_OPTION_DEFAULTS = {}  # type: Dict[str, Any]
 
     # Priority definitions for perf counters
