@@ -1,0 +1,40 @@
+@use './src/styles/defaults/bootstrap-defaults' as bd;
+
+h4 {
+  color: bd.$gray-700;
+}
+
+i {
+  font-size: 6em;
+  margin-top: 120px;
+}
+
+.dashboard {
+  background-color: bd.$body-bg-alt;
+  height: 100%;
+}
+
+.row {
+  display: block;
+  margin-left: -29px;
+  margin-right: -29px;
+  padding-top: 10em;
+}
+
+.fa-exclamation-triangle {
+  color: bd.$danger;
+}
+
+.fa-lock {
+  color: bd.$gray-600;
+}
+
+.fa-wrench {
+  color: bd.$info;
+}
+
+::ng-deep .btn-light {
+  background-color: bd.$info !important;
+  color: bd.$white;
+  overflow: visible;
+}

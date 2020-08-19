@@ -1,0 +1,28 @@
+<div class="dashboard row">
+  <div class="text-center">
+    <br>
+    <div *ngIf="header && message; else elseBlock">
+    <i class="{{ icon }}"
+       aria-hidden="true"></i>
+    <br><br><br>
+    <h3><b>{{ header }}</b></h3>
+      <br>
+    <h4>{{ message }}</h4>
+    </div>
+    <ng-template #elseBlock>
+      <i class="fa fa-exclamation-triangle"
+         aria-hidden="true"></i>
+      <br><br><br>
+      <h3 i18n><b>Page not Found</b></h3>
+        <br>
+      <h4 i18n>Sorry, we couldn’t find what you were looking for.
+      The page you requested may have been changed or moved.</h4>
+    </ng-template>
+    <div *ngIf="section">
+      <h4><ng-container i18n>Please consult the <cd-doc section="{{ section }}"></cd-doc> on how
+      to configure and enable the {{ section_info }} management functionality.</ng-container></h4>
+    </div>
+      <br><br>
+    <cd-back-button name="Return"></cd-back-button>
+  </div>
+</div>

@@ -2,21 +2,21 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-import { configureTestBed } from '../../../../testing/unit-test-helper';
-import { SharedModule } from '../../../shared/shared.module';
-import { Rgw501Component } from './rgw-501.component';
+import { configureTestBed } from '../../../testing/unit-test-helper';
+import { SharedModule } from '../../shared/shared.module';
+import { ErrorComponent } from './error.component';
 
-describe('Rgw501Component', () => {
-  let component: Rgw501Component;
-  let fixture: ComponentFixture<Rgw501Component>;
+describe('ErrorComponent', () => {
+  let component: ErrorComponent;
+  let fixture: ComponentFixture<ErrorComponent>;
 
   configureTestBed({
-    declarations: [Rgw501Component],
+    declarations: [ErrorComponent],
     imports: [HttpClientTestingModule, RouterTestingModule, SharedModule]
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(Rgw501Component);
+    fixture = TestBed.createComponent(ErrorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

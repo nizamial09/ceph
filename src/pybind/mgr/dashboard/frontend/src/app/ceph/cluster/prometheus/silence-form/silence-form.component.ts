@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import _ from 'lodash';
 import moment from 'moment';
 
+import { DashboardNotFoundError } from '../../../../core/error/error';
 import { PrometheusService } from '../../../../shared/api/prometheus.service';
 import {
   ActionLabelsI18n,
@@ -110,7 +111,7 @@ export class SilenceFormComponent {
     const allowed =
       this.permission.read && (this.edit ? this.permission.update : this.permission.create);
     if (!allowed) {
-      this.router.navigate(['/404']);
+      throw new DashboardNotFoundError();
     }
   }
 

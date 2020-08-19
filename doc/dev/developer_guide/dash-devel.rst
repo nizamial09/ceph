@@ -801,6 +801,19 @@ to change, for example ``$color-primary: teal;``
 To overwrite or extend the default CSS, you can add your own styles in
 ``./frontend/src/vendor.overrides.scss``.
 
+Error Handling
+~~~~~~~~~~~~~~
+
+For handling front-end errors, there is a generic Error Component which can be
+found in ``./src/pybind/mgr/dashboard/frontend/src/app/core/error``. For
+reporting a new error, you can simply extend the ``DashboardError`` class
+in ``error.ts`` file and add specific header and message for the new error. Some
+generic error classes are already in place such as ``DashboardNotFoundError``
+and ``DashboardForbiddenError`` which can be called and reused in different
+scenarios.
+
+For example - ``throw new DashboardNotFoundError()``.
+
 I18N
 ----
 
@@ -2312,5 +2325,3 @@ plugin could be rewritten like this:
           return self.mute
 
       return [MuteController]
-
-

@@ -6,7 +6,7 @@ export class NavigationPageHelper extends PageHelper {
   };
 
   navigations = [
-    { menu: 'NFS', component: 'cd-nfs-501' },
+    { menu: 'NFS', component: 'cd-error' },
     {
       menu: 'Object Gateway',
       submenus: [
