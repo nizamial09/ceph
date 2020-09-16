@@ -11,6 +11,20 @@
       <ng-template ngbNavContent>
         <div class="card bg-light mb-3"
              *ngIf="clog">
+          <div class="btn-group"
+               role="group"
+               *ngIf="contentData.clog.length">
+            <button type="button"
+                    class="btn btn-light btn-clipboard"
+                    (click)="logtoText(clog)"
+                    [cdCopy2ClipboardButton]="logText"
+                    [logFlag]="true"></button>
+            <button type="button"
+                    class="btn btn-light btn-logs"
+                    (click)="getLogs(clog, 'cluster_log')">
+              <i [ngClass]="[icons.download]"></i>
+            </button>
+          </div>
           <div class="card-body">
             <p *ngFor="let line of clog">
               <span class="timestamp">{{ line.stamp | cdDate }}</span>
@@ -30,6 +44,20 @@
       <ng-template ngbNavContent>
         <div class="card bg-light mb-3"
              *ngIf="audit_log">
+          <div class="btn-group"
+               role="group"
+               *ngIf="contentData.audit_log.length">
+            <button type="button"
+                    class="btn btn-light btn-clipboard"
+                    (click)="logtoText(audit_log)"
+                    [cdCopy2ClipboardButton]="logText"
+                    logFlag]="true"></button>
+            <button type="button"
+                    class="btn btn-light btn-logs"
+                    (click)="getLogs(audit_log, 'audit_log')">
+              <i [ngClass]="[icons.download]"></i>
+            </button>
+          </div>
           <div class="card-body">
             <p *ngFor="let line of audit_log">
               <span class="timestamp">{{ line.stamp | cdDate }}</span>

@@ -8,6 +8,8 @@ import { ToastrService } from 'ngx-toastr';
 export class Copy2ClipboardButtonDirective implements OnInit {
   @Input()
   private cdCopy2ClipboardButton: string;
+  @Input()
+  logFlag: boolean;
 
   constructor(
     private elementRef: ElementRef,
@@ -36,7 +38,11 @@ export class Copy2ClipboardButtonDirective implements OnInit {
         .then((result: any) => {
           if (result.state === 'granted' || result.state === 'prompt') {
             // Copy text to clipboard.
-            navigator.clipboard.writeText(this.getInputElement().value);
+            if (this.logFlag) {
+              navigator.clipboard.writeText(this.cdCopy2ClipboardButton);
+            } else {
+              navigator.clipboard.writeText(this.getInputElement().value);
+            }
           }
         });
       this.toastr.success('Copied text to the clipboard successfully.');

@@ -5,6 +5,7 @@ import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 
 import { LogsService } from '../../../shared/api/logs.service';
 import { Icons } from '../../../shared/enum/icons.enum';
+import { TextToDownloadService } from './../../../shared/services/text-to-download.service';
 
 @Component({
   selector: 'cd-logs',
@@ -16,6 +17,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   clog: Array<any>;
   audit_log: Array<any>;
   icons = Icons;
+  logText: string;
 
   interval: number;
   priorities: Array<{ name: string; value: string }> = [
@@ -33,7 +35,8 @@ export class LogsComponent implements OnInit, OnDestroy {
   constructor(
     private logsService: LogsService,
     private datePipe: DatePipe,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private textToDownloadService: TextToDownloadService
   ) {}
 
   ngOnInit() {
@@ -119,5 +122,25 @@ export class LogsComponent implements OnInit, OnDestroy {
   clearDate() {
     this.selectedDate = null;
     this.filterLogs();
+  }
+
+  getLogs(log: object, fileName: string) {
+    this.logtoText(log);
+    fileName = `${fileName}_${new Date().toLocaleDateString()}.log`;
+    this.textToDownloadService.download(this.logText, fileName);
+  }
+
+  logtoText(log: object) {
+    this.logText = '';
+    for (const line of Object.keys(log)) {
+      this.logText =
+        this.logText +
+        this.datePipe.transform(log[line].stamp, 'medium') +
+        '\t' +
+        log[line].priority +
+        '\t' +
+        log[line].message +
+        '\n';
+    }
   }
 }
